@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script src="tab.js"></script>
+<style>
+	.content-container {
+		margin-top: 50px;
+	}
+	.content_item {
+		display: none;
+	}
+	.tab {
+		position: relative;
+		max-width: 200px;
+	}
+	.tab .title {
+		background-color: #ececec;
+		color: #333;
+		padding: 10px 20px;
+	}
+	.tab .title:before {
+		content: '';
+		background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' data-prefix='fal' data-icon='angle-down' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 512' class='svg-inline--fa fa-angle-down fa-w-8 fa-2x'%3E%3Cpath fill='currentColor' d='M119.5 326.9L3.5 209.1c-4.7-4.7-4.7-12.3 0-17l7.1-7.1c4.7-4.7 12.3-4.7 17 0L128 287.3l100.4-102.2c4.7-4.7 12.3-4.7 17 0l7.1 7.1c4.7 4.7 4.7 12.3 0 17L136.5 327c-4.7 4.6-12.3 4.6-17-.1z'/%3E%3C/svg%3E");
+		background-size: contain;
+		background-repeat: no-repeat;
+		position: absolute;
+		width: 12px;
+		height: 21px;
+		right: 15px;
+		top: 50%;
+		transform: translate(0,-50%);
+	}
+	.tab .option {
+		display: none;
+		position: absolute;
+		width: 100%;
+	}
+	.tab .option .tab_item {
+		padding: 10px 20px;
+		border: 1px solid #ececec;
+		background-color: #fff;
+	}
+</style>
+</head>
+<body>
+	<div class="tab">
+		<div class="title">選擇頁籤</div>
+		<div class="option">
+			<div class="tab_item">tab1</div>
+			<div class="tab_item">tab2</div>
+			<div class="tab_item">tab3</div>
+			<div class="tab_item">tab4</div>
+		</div>
+	</div>
+	<div class="content-container">
+		<div class="content_item">tab1內容...</div>
+		<div class="content_item">tab2內容...</div>
+		<div class="content_item">tab3內容...</div>
+		<div class="content_item">tab4內容...</div>
+	</div>
+<script>
+new Tab({
+    tab: '.tab',
+    title: '.tab .title',
+    tab_item: '.tab_item',
+    container: '.content-container',
+    container_item: '.content_item'
+});	
+</script>
+</body>
+</html>
