@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<meta charset="utf-8">
+<title>Examples111</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<style>
+html, body {
+	margin: 0;
+	background: #000;
+}
+canvas{
+	margin: 0;
+	width: 100%;
+	height: 100vh;
+}	
+</style>
+</head>
+<body>
+<canvas id="myCanvas"></canvas>
+</body>
+<script>
+var c = document.getElementById("myCanvas");
+var ww = $(window).innerWidth();
+var wh = $(window).height();
+c.width = ww;
+c.height = wh;
+var ctx = c.getContext("2d");
+var balls = [];
+var dot_r = 1;
+//圓心
+var centerX = c.width/2;
+var centerY = c.height/2;
+var centerZ = 0;
+var ball_r = 150;
+
+function draw(centerX,centerY,centerZ,ball_r,dot_r,balls){
+	this.interval = 30; //間隔角度
+	this.centerX = centerX;
+	this.centerY = centerY;
+	this.centerZ = centerZ;
+	this.ball_r = ball_r; //球半徑
+	this.dot_r = dot_r; //點半徑
+	this.balls = balls;
+	this.count = 0;
+	this.init();
+}
+draw.prototype = {
+	init: function() {
+		//前半球
+		var l = 270;
+		for (var j=3;j>=0;j--){
+			this.position(l);
+			l += this.interval;
+		}
+		//後半球
+		var l = 120;
+		for (var j=2;j>=0;j--){
+			this.position(l);
+			l += this.interval;
+		}
+	},
+	position: function(l){
+		var z =  this.centerZ+this.ball_r*Math.cos(l*Math.PI/180);
+		//每層的半徑
+		var z1 = this.ball_r*Math.sin(l*Math.PI/180);
+		for (var i=0;i<360;i+=this.interval) {
+			var x = this.centerX+z1*Math.cos(i*Math.PI/180);
+			var y = this.centerY+z1*Math.sin(i*Math.PI/180);
+			this.balls[this.count] = {};
+			this.balls[this.count].x = x;
+			this.balls[this.count].y = y;
+			this.balls[this.count].z = z;
+			this.count++;
+		}
+	}
+};
+
+function ball(ctx,balls,dot_r) {
+	this.ctx = ctx;
+	this.init(balls,dot_r);
+}
+ball.prototype = {
+	init: function(balls,dot_r) {
+		for(v in balls){
+			var r = dot_r * (1+balls[v].z*0.005);
+			var x = balls[v].x;
+			var y = balls[v].y;
+			this.ctx.beginPath();
+			this.ctx.fillStyle = "#fff";
+			this.ctx.arc(x,y,r,0,2*Math.PI);
+			this.ctx.fill();
+		}
+	}
+}
+
+function animation(ctx,ww,wh,centerX,centerY,centerZ,balls,dot_r){
+	this.ctx = ctx;
+	this.ww = ww;
+	this.wh = wh;
+	this.centerX = centerX;
+	this.centerY = centerY;
+	this.centerZ = centerZ;
+	this.balls = balls;
+	this.dot_r = dot_r;
+	this.count = 0;
+	this.rotateAngle = 3;
+	this.animateFlagA;
+	this.animateFlag=1;
+	this.init(5,5,0);
+	var _this = this;
+	window.addEventListener("mousemove" , function(event){
+		// clearInterval(_this.animateFlagA);
+        var x = event.clientX - _this.centerX;
+        var y = event.clientY - _this.centerY;
+        _this.init(y*0.0002,-x*0.0002,0);
+    });
+}
+animation.prototype = {
+	init: function(rototeX_angle,rototeY_angle,rototeZ_angle){
+		this.rototeX_angle = rototeX_angle;
+		this.rototeY_angle = rototeY_angle;
+		this.rototeZ_angle = rototeZ_angle;
+		var _this = this;
+		this.animateFlagA = setInterval(function(){
+			_this.ctx.clearRect(0,0,_this.ww,_this.wh);
+			_this.rototeX(_this.rototeX_angle);
+			_this.rototeY(_this.rototeY_angle);
+			_this.rototeZ(_this.rototeZ_angle);
+			new ball(_this.ctx,_this.balls,_this.dot_r);
+		},50);
+	},
+	rototeX: function(angle){
+		var angleY = angle*Math.PI/180;
+		var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+        for(var i=0;i<this.balls.length;i++){
+            var y1 = (this.balls[i].z-this.centerZ) * sin + (this.balls[i].y-this.centerY) * cos + this.centerY;
+            var z1 = (this.balls[i].z-this.centerZ) * cos - (this.balls[i].y-this.centerY) * sin + this.centerZ;
+            this.balls[i].y = y1;
+            this.balls[i].z = z1;
+        }
+	},
+	rototeY: function(angle){
+		var angleY = angle*Math.PI/180;
+		var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+		for(var i=0;i<this.balls.length;i++){
+		    var x1 = (this.balls[i].x-this.centerX) * cos - (this.balls[i].z-this.centerZ) * sin + this.centerX;
+		    var z1 = (this.balls[i].x-this.centerX) * sin + (this.balls[i].z-this.centerZ) * cos + this.centerZ;
+		    this.balls[i].x = x1;
+		    this.balls[i].z = z1;
+		}
+	},
+	rototeZ: function(angle){
+		var angleY = angle*Math.PI/180;
+		var cos = Math.cos(angleY);
+        var sin = Math.sin(angleY);
+		for(var i=0;i<this.balls.length;i++){
+            var x1 = (this.balls[i].x-this.centerX) * cos - (this.balls[i].y-this.centerY) * sin + this.centerX;
+            var y1 = (this.balls[i].x-this.centerX) * sin + (this.balls[i].y-this.centerY) * cos + this.centerY;
+            this.balls[i].x = x1;
+            this.balls[i].y = y1;
+        }
+	},
+	go1: function(){
+		window.requestAnimationFrame(this.init());
+	},
+	stop: function(){
+		clearInterval(this.animateFlagA);
+	}
+}
+new draw(centerX,centerY,centerZ,ball_r,dot_r,balls);
+var A = new animation(ctx,c.width,c.height,centerX,centerY,centerZ,balls,dot_r);
+</script>
+</html>
